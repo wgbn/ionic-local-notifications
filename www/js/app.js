@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic'])
+angular.module('starter', ['ionic', 'ngCordova'])
 
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
@@ -26,9 +26,40 @@ angular.module('starter', ['ionic'])
         ['$scope', '$rootScope', '$ionicPlatform', '$cordovaLocalNotification',
             function($scope, $rootScope, $ionicPlatform, $cordovaLocalNotification) {
 
+                var _hs = [
+                    '15:30:00',
+                    '15:35:00',
+                    '15:45:00',
+                    '15:55:00'
+                ];
+                console.log(_hs);
+
                 $ionicPlatform.ready(function () {
 
+                    if (window.cordova) {
+                        _hs.forEach(function(hs, k) {
 
+                            var now = new Date();
+                            var t = hs.split(':');
+                            now.setHours(parseInt(t[0]));
+                            now.setMinutes(parseInt(t[1]));
+                            now.setSeconds(0);
+                            now.setMilliseconds(0);
+
+                            var _at = new Date(now.getTime() - 1000); //600000
+                            console.log(_at);
+
+                            $cordovaLocalNotification.schedule({
+                                id: (k + 1),
+                                title: 'notificacao '+k,
+                                text: 'Text here',
+                                at: _at
+                            }).then(function (result) {
+                                console.log(result);
+                            });
+
+                        });
+                    }
 
                 });
 
