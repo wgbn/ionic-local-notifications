@@ -26,28 +26,36 @@ angular.module('starter', ['ionic', 'ngCordova'])
         ['$scope', '$rootScope', '$ionicPlatform', '$cordovaLocalNotification',
             function($scope, $rootScope, $ionicPlatform, $cordovaLocalNotification) {
 
+                $scope.result = [];
+
                 var _hs = [
-                    '15:30:00',
-                    '15:35:00',
-                    '15:45:00',
-                    '15:55:00'
+                    '17:25:00',
+                    '17:35:00',
+                    '17:45:00',
+                    '17:55:00'
                 ];
+                var now, t, _at;
                 console.log(_hs);
 
                 $ionicPlatform.ready(function () {
 
                     if (window.cordova) {
+
+                        $cordovaLocalNotification.cancelAll().then(function (result) {
+                            console.log('cancel', result);
+                        });
+
                         _hs.forEach(function(hs, k) {
 
-                            var now = new Date();
-                            var t = hs.split(':');
+                            now = new Date();
+                            t = hs.split(':');console.log(t);
                             now.setHours(parseInt(t[0]));
                             now.setMinutes(parseInt(t[1]));
                             now.setSeconds(0);
                             now.setMilliseconds(0);
 
-                            var _at = new Date(now.getTime() - 1000); //600000
-                            console.log(_at);
+                            _at = new Date(now.getTime() - 1000); //600000
+                            console.log('_at', _at);
 
                             $cordovaLocalNotification.schedule({
                                 id: (k + 1),
@@ -55,10 +63,29 @@ angular.module('starter', ['ionic', 'ngCordova'])
                                 text: 'Text here',
                                 at: _at
                             }).then(function (result) {
-                                console.log(result);
+                                console.log('agendado', result);
+                                $scope.result.push(result);
                             });
 
                         });
+
+                        $scope.btn = function() {
+                            console.log('clicou');
+                            $cordovaLocalNotification.schedule({
+                                id: 11,
+                                title: 'Title here',
+                                text: 'Text here',
+                                data: {
+                                    customProperty: 'custom value'
+                                }
+                            }).then(function (result) {
+                                console.log(result);
+                            }, function(err){
+                                console.log(err);
+                            }).catch(function(err) {
+                                console.log(err);
+                            });
+                        };
                     }
 
                 });
